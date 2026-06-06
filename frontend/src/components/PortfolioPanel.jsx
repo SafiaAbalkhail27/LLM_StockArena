@@ -47,7 +47,7 @@ function PortfolioCard({ llm, snapshot }) {
 }
 
 export default function PortfolioPanel({ snapshots }) {
-  const llms = ['gpt4o', 'claude', 'gemini', 'grok'];
+  const llms = ['gpt4o', 'claude', 'grok'];
 
   const latest = {};
   for (const s of snapshots) {

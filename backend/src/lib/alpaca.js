@@ -22,7 +22,7 @@ export async function getLivePrices(symbols) {
 export async function getHistoricalBars(symbols, startDate, endDate) {
   const url =
     `${BASE_DATA}/stocks/bars?symbols=${symbols.join(',')}&timeframe=1Day` +
-    `&start=${startDate}&end=${endDate}&limit=1000&adjustment=all`;
+    `&start=${startDate}&end=${endDate}&limit=1000&adjustment=all&feed=iex`;
   const res = await fetch(url, { headers: headers() });
   if (!res.ok) throw new Error(`Alpaca historical bars failed: ${res.status}`);
   const data = await res.json();

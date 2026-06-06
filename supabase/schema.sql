@@ -19,6 +19,7 @@ create table if not exists trades (
   timestamp timestamptz not null,
   reasoning_text text,
   is_refusal boolean not null default false,
+  refusal_type text check (refusal_type in ('budget', 'values') or refusal_type is null),
   theory_tag text,
   mode text not null check (mode in ('live', 'backtest')),
   cycle_id uuid references cycles(id),

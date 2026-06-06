@@ -31,7 +31,7 @@ STARTING CAPITAL: $${STARTING_CAPITAL}
 CASH REMAINING: $${Number(portfolio.cash).toFixed(2)}
 TOTAL PORTFOLIO VALUE: $${Number(portfolio.total_value).toFixed(2)}
 
-CURRENT STOCK PRICES (${basket.name}):
+CURRENT STOCK PRICES:
 ${priceLines}
 
 CURRENT HOLDINGS:

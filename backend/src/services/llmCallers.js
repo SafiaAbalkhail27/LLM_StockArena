@@ -41,7 +41,7 @@ export async function callClaude(prompt) {
 
 export async function callGemini(prompt) {
   const client = getGemini();
-  const model = client.getGenerativeModel({ model: 'gemini-1.5-pro' });
+  const model = client.getGenerativeModel({ model: 'gemini-2.0-flash' });
   const res = await model.generateContent(prompt);
   return res.response.text();
 }
@@ -52,7 +52,7 @@ export async function callGrok(prompt) {
     baseURL: 'https://api.x.ai/v1',
   });
   const res = await client.chat.completions.create({
-    model: 'grok-2-latest',
+    model: 'grok-4.3',
     messages: [{ role: 'user', content: prompt }],
     max_tokens: 1500,
   });

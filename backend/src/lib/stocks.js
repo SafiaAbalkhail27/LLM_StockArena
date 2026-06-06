@@ -16,6 +16,6 @@ export const THEORY_BASKETS = {
   },
 };
 
-export const LLM_NAMES = ['gpt4o', 'claude', 'gemini', 'grok'];
+export const LLM_NAMES = ['gpt4o', 'claude', 'grok'];
 
-export const STARTING_CAPITAL = 10;
+export const STARTING_CAPITAL = 10000;

@@ -15,7 +15,16 @@ async function getOrInitPortfolio(llm, mode) {
     .limit(1)
     .single();
 
-  if (data) return data;
+  // DB column is `cash_remaining`; downstream code uses `cash`. Normalize here.
+  if (data) {
+    return {
+      llm: data.llm,
+      mode: data.mode,
+      cash: data.cash_remaining,
+      holdings: data.holdings ?? {},
+      total_value: data.total_value,
+    };
+  }
 
   return {
     llm,
@@ -37,12 +46,14 @@ async function getTradeHistory(llm, mode) {
   return (data ?? []).reverse();
 }
 
-async function saveTrade(trade) {
-  await supabase.from('trades').insert(trade);
+async function saveTrades(trades) {
+  const { error } = await supabase.from('trades').insert(trades);
+  if (error) throw new Error(`saveTrades failed (${trades.length} rows): ${error.message}`);
 }
 
 async function savePortfolio(snapshot) {
-  await supabase.from('portfolio_snapshots').insert(snapshot);
+  const { error } = await supabase.from('portfolio_snapshots').insert(snapshot);
+  if (error) throw new Error(`savePortfolio failed: ${error.message}`);
 }
 
 async function runOneLLM({ llm, date, prices, basket, mode, cycleId }) {
@@ -79,22 +90,22 @@ async function runOneLLM({ llm, date, prices, basket, mode, cycleId }) {
 
   const timestamp = new Date(date).toISOString();
 
-  for (const d of decisions) {
-    await saveTrade({
-      llm,
-      ticker: d.ticker,
-      action: d.action,
-      quantity: d.quantity,
-      price_at_decision: d.price_at_decision,
-      timestamp,
-      reasoning_text: reasoningText,
-      is_refusal: d.is_refusal,
-      theory_tag: basket.name,
-      mode,
-      cycle_id: cycleId,
-      raw_response: rawResponse,
-    });
-  }
+  const rows = decisions.map((d) => ({
+    llm,
+    ticker: d.ticker,
+    action: d.action,
+    quantity: d.quantity,
+    price_at_decision: d.price_at_decision,
+    timestamp,
+    reasoning_text: reasoningText,
+    is_refusal: d.is_refusal,
+    refusal_type: d.refusal_type,
+    theory_tag: basket.name,
+    mode,
+    cycle_id: cycleId,
+    raw_response: rawResponse,
+  }));
+  await saveTrades(rows);
 
   const updatedPortfolio = applyTrades(
     { cash: portfolio.cash, holdings: portfolio.holdings ?? {} },
